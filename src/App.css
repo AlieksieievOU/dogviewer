@@ -1,0 +1,120 @@
+#root {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+button {
+    cursor: pointer;
+}
+
+.app-container {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.main-content-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.left-panel {
+    width: 70%;
+}
+
+.right-panel {
+    width: 25%;
+}
+
+.button-container {
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.favorites-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.thumbnail-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.favorites-list li,
+.thumbnail-list li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.favorites-list h5,
+.thumbnail-list h5 {
+    margin: 0 0 5px 0;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.favorites-list button,
+.thumbnail-list button {
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.thumbnail-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.thumbnail-image:hover {
+    transform: scale(1.05);
+}
+
+.main-dog-viewer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+    flex-direction: column;
+}
+
+.main-dog-viewer img {
+    width: 400px;
+    height: 400px;
+    object-fit: cover;
+}
+
+@media (max-width: 768px) {
+    .main-content-container {
+        flex-direction: column;
+    }
+
+    .left-panel,
+    .right-panel {
+        width: 100%;
+    }
+
+    .thumbnail-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .main-dog-viewer img {
+        width: 100%;
+        height: auto;
+    }
+}
