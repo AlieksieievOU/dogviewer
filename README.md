@@ -20,7 +20,7 @@ There should be a button next to each favorited item for removing it from the fa
 
 1.  **Clone the repository:**
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/AlieksieievOU/dogviewer.git
     ```
 
 2.  **Navigate to the project directory:**
