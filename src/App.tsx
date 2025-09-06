@@ -1,42 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import './App.css';
-import type { Dog, DogApiResponse } from './types';
-import { useQuery } from '@tanstack/react-query';
+import type { Dog } from './types';
+import { useDogs } from './hooks/useDogs';
+import { DogViewer } from './components/DogViewer';
+import { ThumbnailList } from './components/ThumbnailList';
+import { FavoritesList } from './components/FavoritesList';
 
 function App() {
     const [mainDog, setMainDog] = useState<Dog | null>(null);
-    const [favorites, setToFavorites] = useState<Dog[]>([]);
-    const {
-        isPending,
-        isError,
-        data: dogs,
-        error,
-    } = useQuery<Dog[]>({
-        queryKey: ['dogs'],
-        queryFn: async (): Promise<Dog[]> => {
-            const response = await fetch(
-                'https://dog.ceo/api/breeds/image/random/10'
-            );
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch dogs');
-            }
-
-            const data = (await response.json()) as DogApiResponse;
-
-            return data.message.map((imageUrl) => {
-                const urlParts = imageUrl.split('/');
-                const breedIndex =
-                    urlParts.findIndex((part) => part === 'breeds') + 1;
-                const breed = urlParts[breedIndex] || 'unknown';
-
-                return {
-                    imageUrl,
-                    breed: breed.replace('-', ' '),
-                };
-            });
-        },
-    });
+    const [favorites, setFavorites] = useState<Dog[]>([]);
+    const [filter, setFilter] = useState<string>('');
+    const { isPending, isError, data: dogs, error } = useDogs();
 
     useEffect(() => {
         if (dogs && dogs.length > 0) {
@@ -45,12 +19,13 @@ function App() {
     }, [dogs]);
 
     const handleFavorite = () => {
-        if (
-            mainDog &&
-            !favorites.some((fav) => fav.imageUrl === mainDog.imageUrl)
-        ) {
-            setToFavorites([...favorites, mainDog]);
+        if (mainDog && !favorites.some((fav) => fav.imageUrl === mainDog.imageUrl)) {
+            setFavorites([...favorites, mainDog]);
         }
+    };
+
+    const handleRemoveFavorite = (dogToRemove: Dog) => {
+        setFavorites(favorites.filter((fav) => fav.imageUrl !== dogToRemove.imageUrl));
     };
 
     if (isPending) {
@@ -61,64 +36,36 @@ function App() {
         return <span>Error: {error.message}</span>;
     }
 
-    const thumbnails: Dog[] = dogs.map((dog) => ({
-        imageUrl: dog.imageUrl,
-        breed: dog.breed,
-    }));
+    const filteredThumbnails = useMemo(
+        () =>
+            (dogs ?? [])
+                .map((dog) => ({
+                    imageUrl: dog.imageUrl,
+                    breed: dog.breed,
+                }))
+                .filter((dog) => dog.breed.toLowerCase().includes(filter.toLowerCase())),
+        [dogs, filter]
+    );
 
     return (
         <div className="app-container">
             <h1>Dog Viewer</h1>
             <div className="main-content-container">
                 <div className="left-panel">
-                    <div className="main-dog-viewer">
-                        {mainDog ? (
-                            <>
-                                <h2>{mainDog.breed}</h2>
-                                <img
-                                    src={mainDog.imageUrl}
-                                    alt={`${mainDog.breed}`}
-                                    className="main-dog-image"
-                                />
-                            </>
-                        ) : (
-                            <p>No dog selected.</p>
-                        )}
-                        <div className="button-container">
-                            <button onClick={handleFavorite}>
-                                Add To Favorites
-                            </button>
-                        </div>
-                    </div>
-                    <h2>Thumbnails</h2>
-                    <ul className="thumbnail-list">
-                        {thumbnails.map((dog, index) => (
-                            <li key={index}>
-                                <h5>{dog.breed}</h5>
-                                <button onClick={() => setMainDog(dog)}>
-                                    <img
-                                        src={dog.imageUrl}
-                                        alt={dog.breed}
-                                        className="thumbnail-image"
-                                    />
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
+                    <DogViewer mainDog={mainDog} handleFavorite={handleFavorite} />
+                    <ThumbnailList
+                        thumbnails={filteredThumbnails}
+                        setMainDog={setMainDog}
+                        filter={filter}
+                        setFilter={setFilter}
+                    />
                 </div>
                 {favorites.length > 0 ? (
-                    <div className="right-panel">
-                        <h2>Favorites</h2>
-                        <ul className="favorites-list">
-                            {favorites.map((dog, index) => (
-                                <li key={index}>
-                                    <button onClick={() => setMainDog(dog)}>
-                                        <h5>{dog.breed}</h5>
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                    <FavoritesList
+                        favorites={favorites}
+                        setMainDog={setMainDog}
+                        handleRemoveFavorite={handleRemoveFavorite}
+                    />
                 ) : null}
             </div>
         </div>
