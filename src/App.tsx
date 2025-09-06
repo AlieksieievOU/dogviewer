@@ -28,14 +28,6 @@ function App() {
         setFavorites(favorites.filter((fav) => fav.imageUrl !== dogToRemove.imageUrl));
     };
 
-    if (isPending) {
-        return <span>Loading...</span>;
-    }
-
-    if (isError) {
-        return <span>Error: {error.message}</span>;
-    }
-
     const filteredThumbnails = useMemo(
         () =>
             (dogs ?? [])
@@ -46,6 +38,14 @@ function App() {
                 .filter((dog) => dog.breed.toLowerCase().includes(filter.toLowerCase())),
         [dogs, filter]
     );
+
+    if (isPending) {
+        return <span>Loading...</span>;
+    }
+
+    if (isError) {
+        return <span>Error: {error.message}</span>;
+    }
 
     return (
         <div className="app-container">
