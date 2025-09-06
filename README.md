@@ -40,4 +40,4 @@ There should be a button next to each favorited item for removing it from the fa
 
 5.  Open your browser and navigate to the local server address provided by Vite (usually something like `http://localhost:5173`).
 
-6. Vercel demo : https://dogviewer-git-main-oleksandr-alieksieievs-projects-992273ed.vercel.app?_vercel_share=BOiT3ArwDz0qERPkXASeAgDQnRyAQbsU
+6. Vercel demo : https://dogviewer.vercel.app/
